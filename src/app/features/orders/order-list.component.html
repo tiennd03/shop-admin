@@ -1,0 +1,102 @@
+<header class="page-header">
+  <div>
+    <h1>Orders</h1>
+    <p>Track orders and update their status. Click a row for details.</p>
+  </div>
+</header>
+
+<section class="card">
+  <mat-chip-listbox
+    class="status-chips"
+    aria-label="Filter by status"
+    [value]="statusFilter()"
+    (change)="setStatusFilter($event.value)"
+  >
+    <mat-chip-option value="all">All ({{ counts().all }})</mat-chip-option>
+    @for (s of statuses; track s) {
+      <mat-chip-option [value]="s">{{ labels[s] }} ({{ counts()[s] }})</mat-chip-option>
+    }
+  </mat-chip-listbox>
+
+  <div class="toolbar-row">
+    <mat-form-field class="search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search by order code, customer or email</mat-label>
+      <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      @if (search()) {
+        <button mat-icon-button matSuffix (click)="search.set('')" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (loadError(); as message) {
+    <p class="load-error">{{ message }}</p>
+  }
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource" matSort matSortActive="createdAt" matSortDirection="desc">
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Order</th>
+        <td mat-cell *matCellDef="let o" class="code">{{ o.code }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="customer">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Customer</th>
+        <td mat-cell *matCellDef="let o">
+          <div>{{ o.customerName }}</div>
+          <div class="muted small">{{ o.customerEmail }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="createdAt">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Date</th>
+        <td mat-cell *matCellDef="let o">{{ o.createdAt | date: 'MMM d, y · HH:mm' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="items">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="num">Items</th>
+        <td mat-cell *matCellDef="let o" class="num">{{ itemCount(o) }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="num">Total</th>
+        <td mat-cell *matCellDef="let o" class="num">{{ o.total | currency: 'USD' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let o" (click)="$event.stopPropagation()">
+          <mat-form-field class="status-select" subscriptSizing="dynamic">
+            <mat-select
+              [value]="o.status"
+              (valueChange)="changeStatus(o, $event)"
+              [class]="'status-' + o.status"
+              aria-label="Order status"
+            >
+              @for (s of statuses; track s) {
+                <mat-option [value]="s">{{ labels[s] }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns" class="clickable" (click)="openDetail(row)"></tr>
+    </table>
+  </div>
+
+  @if (!loading() && filtered().length === 0) {
+    <div class="empty-state">
+      <mat-icon>receipt_long</mat-icon>
+      <p>{{ counts().all === 0 ? 'No orders yet. Generate sample data from the dashboard.' : 'No orders match your filters.' }}</p>
+    </div>
+  }
+
+  <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons />
+</section>

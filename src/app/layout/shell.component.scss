@@ -1,0 +1,54 @@
+.container {
+  height: 100vh;
+  background: transparent;
+}
+
+.sidenav {
+  width: 240px;
+  border-right: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 64px;
+  padding: 0 20px;
+  font: var(--mat-sys-title-medium);
+  font-weight: 600;
+  color: var(--mat-sys-primary);
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.user-button mat-icon {
+  margin-right: 4px;
+}
+
+.content {
+  padding: 24px;
+  max-width: 1280px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 599px) {
+  .content {
+    padding: 16px;
+  }
+
+  .email {
+    display: none;
+  }
+}

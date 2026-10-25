@@ -1,0 +1,103 @@
+<header class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>Store performance at a glance · revenue chart covers the last 14 days</p>
+  </div>
+</header>
+
+@if (loading()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+@if (loadError(); as message) {
+  <p class="load-error">{{ message }}</p>
+}
+
+@if (isEmpty()) {
+  <section class="card empty-state">
+    <mat-icon>auto_awesome</mat-icon>
+    <h2>Your store is empty</h2>
+    <p>Generate sample products and orders to explore the dashboard.</p>
+    <button mat-flat-button (click)="seed()" [disabled]="seeding()">
+      {{ seeding() ? 'Creating…' : 'Generate sample data' }}
+    </button>
+  </section>
+} @else if (!loading()) {
+  <section class="kpis">
+    <div class="card kpi">
+      <div class="kpi-label"><mat-icon>payments</mat-icon>Revenue</div>
+      <div class="kpi-value">{{ stats().revenue | currency: 'USD' }}</div>
+      <div class="kpi-hint">Excludes cancelled orders</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-label"><mat-icon>receipt_long</mat-icon>Orders</div>
+      <div class="kpi-value">{{ stats().orders }}</div>
+      <div class="kpi-hint">All statuses</div>
+    </div>
+    <div class="card kpi">
+      <div class="kpi-label"><mat-icon>shopping_basket</mat-icon>Avg. order value</div>
+      <div class="kpi-value">{{ stats().avgOrder | currency: 'USD' }}</div>
+      <div class="kpi-hint">Per non-cancelled order</div>
+    </div>
+    <a class="card kpi link" routerLink="/orders">
+      <div class="kpi-label"><mat-icon>pending_actions</mat-icon>Pending</div>
+      <div class="kpi-value">{{ stats().pending }}</div>
+      <div class="kpi-hint">Waiting to be processed →</div>
+    </a>
+  </section>
+
+  <section class="charts">
+    <div class="card">
+      <h2>Daily revenue</h2>
+      <app-chart [config]="revenueChart()" [height]="280" />
+    </div>
+    <div class="card">
+      <h2>Orders by status</h2>
+      <app-chart [config]="statusChart()" [height]="280" />
+    </div>
+  </section>
+
+  <section class="lists">
+    <div class="card">
+      <div class="list-header">
+        <h2>Recent orders</h2>
+        <a mat-button routerLink="/orders">View all</a>
+      </div>
+      <ul class="list">
+        @for (order of recentOrders(); track order.id) {
+          <li>
+            <div>
+              <div class="primary">{{ order.code }} · {{ order.customerName }}</div>
+              <div class="muted small">{{ order.createdAt | date: 'MMM d, HH:mm' }}</div>
+            </div>
+            <div class="right">
+              <div class="primary num">{{ order.total | currency: 'USD' }}</div>
+              <span [class]="'badge status-' + order.status">{{ labels[order.status] }}</span>
+            </div>
+          </li>
+        } @empty {
+          <li class="muted">No orders yet.</li>
+        }
+      </ul>
+    </div>
+
+    <div class="card">
+      <div class="list-header">
+        <h2>Low stock</h2>
+        <a mat-button routerLink="/products">Manage</a>
+      </div>
+      <ul class="list">
+        @for (product of lowStockProducts(); track product.id) {
+          <li>
+            <div>
+              <div class="primary">{{ product.name }}</div>
+              <div class="muted small">{{ product.sku }}</div>
+            </div>
+            <div class="right low-stock">{{ product.stock }} left</div>
+          </li>
+        } @empty {
+          <li class="muted">All active products have {{ lowStockThreshold }}+ in stock.</li>
+        }
+      </ul>
+    </div>
+  </section>
+}

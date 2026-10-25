@@ -1,0 +1,72 @@
+.page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--mat-sys-primary);
+  font: var(--mat-sys-title-medium);
+  font-weight: 600;
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0;
+  font: var(--mat-sys-headline-small);
+}
+
+.muted {
+  margin: 4px 0 24px;
+}
+
+.notice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: var(--mat-sys-tertiary-container);
+  color: var(--mat-sys-on-tertiary-container);
+  font-size: 14px;
+
+  code {
+    font-size: 12px;
+  }
+}
+
+.error {
+  color: var(--mat-sys-error);
+  margin: 0 0 12px;
+  font-size: 14px;
+}
+
+.submit {
+  height: 44px;
+
+  mat-spinner {
+    margin: 0 auto;
+  }
+}
+
+.switch {
+  margin: 16px 0 0;
+  text-align: center;
+  color: var(--mat-sys-on-surface-variant);
+  font-size: 14px;
+}

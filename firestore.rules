@@ -1,0 +1,32 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function validProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() <= 120
+        && data.sku is string && data.sku.size() > 0
+        && data.price is number && data.price > 0
+        && data.stock is int && data.stock >= 0
+        && data.status in ['active', 'inactive'];
+    }
+
+    match /products/{productId} {
+      allow read, delete: if signedIn();
+      allow create, update: if signedIn() && validProduct(request.resource.data);
+    }
+
+    match /orders/{orderId} {
+      allow read, create: if signedIn();
+      // Only the status of an existing order can change
+      allow update: if signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['pending', 'processing', 'shipped', 'completed', 'cancelled'];
+      allow delete: if false;
+    }
+  }
+}

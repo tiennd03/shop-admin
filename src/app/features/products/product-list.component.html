@@ -1,0 +1,119 @@
+<header class="page-header">
+  <div>
+    <h1>Products</h1>
+    <p>{{ total() }} products in your catalog</p>
+  </div>
+  <button mat-flat-button (click)="openForm()">
+    <mat-icon>add</mat-icon>
+    Add product
+  </button>
+</header>
+
+<section class="card">
+  <div class="toolbar-row">
+    <mat-form-field class="search" subscriptSizing="dynamic">
+      <mat-icon matPrefix>search</mat-icon>
+      <mat-label>Search by name or SKU</mat-label>
+      <input matInput [ngModel]="search()" (ngModelChange)="search.set($event)" />
+      @if (search()) {
+        <button mat-icon-button matSuffix (click)="search.set('')" aria-label="Clear search">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </mat-form-field>
+
+    <mat-form-field class="filter" subscriptSizing="dynamic">
+      <mat-label>Category</mat-label>
+      <mat-select [value]="category()" (valueChange)="category.set($event)">
+        <mat-option value="all">All categories</mat-option>
+        @for (c of categories; track c) {
+          <mat-option [value]="c">{{ c }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+  @if (loadError(); as message) {
+    <p class="load-error">{{ message }}</p>
+  }
+
+  <div class="table-wrap">
+    <table mat-table [dataSource]="dataSource" matSort matSortActive="name" matSortDirection="asc">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Product</th>
+        <td mat-cell *matCellDef="let p">
+          <div class="name">{{ p.name }}</div>
+          <div class="sku muted">{{ p.sku }}</div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="category">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Category</th>
+        <td mat-cell *matCellDef="let p">{{ p.category }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="price">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="num">Price</th>
+        <td mat-cell *matCellDef="let p" class="num">{{ p.price | currency: 'USD' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="stock">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header arrowPosition="before" class="num">Stock</th>
+        <td mat-cell *matCellDef="let p" class="num">
+          <span [class.low-stock]="p.stock < lowStock" [matTooltip]="p.stock < lowStock ? 'Low stock' : ''">
+            {{ p.stock }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+        <td mat-cell *matCellDef="let p">
+          <span [class]="'badge status-' + p.status">
+            {{ p.status === 'active' ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let p" class="actions">
+          <button mat-icon-button [matMenuTriggerFor]="menu" [attr.aria-label]="'Actions for ' + p.name">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu" xPosition="before">
+            <button mat-menu-item (click)="openForm(p)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="confirmDelete(p)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="columns"></tr>
+      <tr mat-row *matRowDef="let row; columns: columns" (dblclick)="openForm(row)"></tr>
+    </table>
+  </div>
+
+  @if (!loading() && filtered().length === 0) {
+    <div class="empty-state">
+      <mat-icon>inventory_2</mat-icon>
+      @if (total() === 0) {
+        <p>No products yet.</p>
+        <button mat-stroked-button (click)="openForm()">Add your first product</button>
+      } @else {
+        <p>No products match your filters.</p>
+        <button mat-stroked-button (click)="clearFilters()">Clear filters</button>
+      }
+    </div>
+  }
+
+  <mat-paginator [pageSizeOptions]="[10, 25, 50]" [pageSize]="10" showFirstLastButtons />
+</section>

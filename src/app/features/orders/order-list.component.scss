@@ -1,0 +1,33 @@
+.status-chips {
+  display: block;
+  margin-bottom: 16px;
+}
+
+.code {
+  font-weight: 500;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.small {
+  font-size: 12px;
+}
+
+.clickable {
+  cursor: pointer;
+
+  &:hover {
+    background: var(--mat-sys-surface-container);
+  }
+}
+
+.status-select {
+  width: 150px;
+  padding: 4px 0;
+  --mat-form-field-container-height: 40px;
+  --mat-form-field-container-vertical-padding: 8px;
+  --mat-select-trigger-text-color: currentColor;
+}
+
+.load-error {
+  color: var(--mat-sys-error);
+}

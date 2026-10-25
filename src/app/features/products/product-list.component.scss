@@ -1,0 +1,21 @@
+.name {
+  font-weight: 500;
+}
+
+.sku {
+  font-size: 12px;
+  font-family: 'Roboto Mono', monospace;
+}
+
+.actions {
+  width: 56px;
+  text-align: right;
+}
+
+tr.mat-mdc-row:hover {
+  background: var(--mat-sys-surface-container);
+}
+
+.load-error {
+  color: var(--mat-sys-error);
+}
