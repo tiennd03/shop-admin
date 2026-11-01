@@ -3,7 +3,7 @@
 An admin dashboard for a small online store, built with **Angular 20**, **Angular Material** and **Firebase**.
 Store staff can sign in, manage the product catalog, track orders and see sales at a glance — all data updates in realtime.
 
-> **Live demo:** _add your deployed URL here_ · Demo account: _add a test email/password here_
+> **Live demo:** [https://tiennd-shop-admin.web.app](https://tiennd-shop-admin.web.app) · Demo account: admin@test.com/Banhbao@1608
 
 <!-- Add screenshots: docs/screenshots/dashboard.png, products.png, orders.png -->
 
